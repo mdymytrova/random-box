@@ -6,9 +6,12 @@ import { AllColors } from './allColors.constant';
 type Props = {
 	allColors: string[]
 };
-class App extends React.Component<Props, {randomBoxNumber: number}> {
+type State = {
+	boxColors: string[]
+};
+
+class App extends React.Component<Props, State> {
 	private boxesNumber: number = 32;
-	private initialColors: string[];
 
 	static defaultProps: Props = {
 		allColors: AllColors
@@ -17,19 +20,21 @@ class App extends React.Component<Props, {randomBoxNumber: number}> {
 	  constructor(props: Props) {
 		super(props);
 
-		this.initialColors = this.getInitialColors();
+		this.state = {
+			boxColors: this.getInitialColors()
+		};
 
 		setInterval((): void => {
-			this.setState({randomBoxNumber: this.getRandomIndex()});
 			this.updateRandomBoxColor();
 		}, 300);
 
 	  }
 	  
 	render(): React.ReactNode {
+		const { boxColors } = this.state; 
 		return (
 			<div className="app">
-			  	{this.initialColors.map((color: string, index: number) => {
+			  	{boxColors.map((color: string, index: number) => {
 					return (
 						<Box key={index} color={color} />
 					);
@@ -47,8 +52,9 @@ class App extends React.Component<Props, {randomBoxNumber: number}> {
 
 	private updateRandomBoxColor = (): void => {
 		const { allColors } = this.props;
-		const { randomBoxNumber } = this.state;
-		this.initialColors[randomBoxNumber] = allColors[this.getRandomIndex(allColors.length)];
+		const boxColors: string[] = [...this.state.boxColors];
+		boxColors[this.getRandomIndex()] = allColors[this.getRandomIndex(allColors.length)];
+		this.setState({boxColors});
 	}
 
 	private getRandomIndex = (length: number = this.boxesNumber): number => {
